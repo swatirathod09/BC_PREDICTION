@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tumor classifier · Breast cancer prediction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <h1>Tumor classifier</h1>
+      <p>Predicts malignant or benign from 30 cell-nucleus measurements taken from a fine needle aspirate image.</p>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+    <section class="inputs" aria-labelledby="inputs-title">
+      <div class="inputs-head">
+        <h2 id="inputs-title">Measurements</h2>
+        <div class="quick">
+          <button type="button" class="ghost" id="load-benign">Load benign sample</button>
+          <button type="button" class="ghost" id="load-malignant">Load malignant sample</button>
+          <button type="button" class="ghost" id="clear">Clear all</button>
+        </div>
+      </div>
+
+      <details class="paste">
+        <summary>Paste all 30 values at once</summary>
+        <label for="paste-box" class="sr">30 comma-separated values</label>
+        <textarea id="paste-box" rows="3" placeholder="11.76, 21.6, 74.72, 427.9, 0.08637, …"></textarea>
+        <p class="paste-msg" id="paste-msg" role="status">Values go in the same order as your dataset columns.</p>
+      </details>
+
+      <div class="tabs" role="tablist" aria-label="Measurement group">
+        <button role="tab" id="tab-mean" aria-selected="true" aria-controls="panel" data-group="0">Mean <span class="count" data-count="0">0/10</span></button>
+        <button role="tab" id="tab-se" aria-selected="false" aria-controls="panel" data-group="1">Standard error <span class="count" data-count="1">0/10</span></button>
+        <button role="tab" id="tab-worst" aria-selected="false" aria-controls="panel" data-group="2">Worst <span class="count" data-count="2">0/10</span></button>
+      </div>
+      <p class="group-note" id="group-note"></p>
+      <div class="fields" id="panel" role="tabpanel"></div>
+    </section>
+
+    <aside class="slide" aria-labelledby="result-title">
+      <div class="slide-sticky">
+        <div class="field-wrap">
+          <svg id="scope" viewBox="0 0 320 320" role="img" aria-label="Illustration of cell nuclei that changes size and shape with your measurements">
+            <defs>
+              <radialGradient id="eosin" cx="50%" cy="45%" r="60%">
+                <stop offset="0%" stop-color="#F8D3E3"/>
+                <stop offset="100%" stop-color="#EBA5C4"/>
+              </radialGradient>
+              <clipPath id="clip"><circle cx="160" cy="160" r="148"/></clipPath>
+            </defs>
+            <circle cx="160" cy="160" r="156" class="ring" id="ring"/>
+            <g clip-path="url(#clip)">
+              <rect width="320" height="320" fill="url(#eosin)"/>
+              <g id="fibres" opacity=".35"></g>
+              <g id="nuclei"></g>
+            </g>
+          </svg>
+          <p class="scope-cap" id="scope-cap">Nuclei redraw as you type: larger radius, bumpier outline for higher concavity.</p>
+        </div>
+
+        <div class="result" id="result" aria-live="polite">
+          <h2 id="result-title" class="sr">Result</h2>
+          <p class="empty" id="empty">Fill in all 30 measurements, or load a sample, to get a prediction.</p>
+          <div class="verdict" id="verdict" hidden>
+            <p class="verdict-word" id="verdict-word"></p>
+            <p class="verdict-sub" id="verdict-sub"></p>
+            <div class="bars">
+              <div class="bar-row"><span>Malignant</span><div class="bar"><i id="bar-m"></i></div><b id="pct-m"></b></div>
+              <div class="bar-row"><span>Benign</span><div class="bar"><i id="bar-b"></i></div><b id="pct-b"></b></div>
+            </div>
+          </div>
+          <p class="error" id="error" role="alert" hidden></p>
+        </div>
+
+        <button type="button" class="primary" id="predict" disabled>Predict diagnosis</button>
+        <p class="progress" id="progress">0 of 30 values entered</p>
+        <p class="disclaimer">Educational demo trained on 569 cases. It is not a medical device and cannot replace a pathologist or clinician.</p>
+      </div>
+    </aside>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
